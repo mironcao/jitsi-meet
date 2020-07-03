@@ -229,6 +229,7 @@ function _upgradeRoleStarted(thenableWithCancel) {
  * @returns {Function}
  */
 export function waitForOwner() {
+    console.log('Prueba waitforowner');
     return (dispatch: Dispatch<any>) =>
         dispatch({
             type: WAIT_FOR_OWNER,
