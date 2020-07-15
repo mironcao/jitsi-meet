@@ -1,5 +1,7 @@
 // @flow
 
+import { commonUserJoinedHandling } from '../conference';
+
 export * from './functions.any';
 
 /**

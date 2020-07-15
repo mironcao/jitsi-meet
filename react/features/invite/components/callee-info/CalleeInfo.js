@@ -50,7 +50,7 @@ class CalleeInfo extends Component<Props> {
             status = CALLING
         } = this.props._callee;
         const className = this.props._isVideoMuted ? 'solidBG' : undefined;
-
+        
         return (
             <Container
                 { ...this._style('ringing', className) }
@@ -74,6 +74,7 @@ class CalleeInfo extends Component<Props> {
                 </Container>
             </Container>
         );
+        //return <Container><Text>Hola</Text></Container>
     }
 
     /**

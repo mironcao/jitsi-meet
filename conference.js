@@ -3,7 +3,13 @@
 import EventEmitter from 'events';
 import Logger from 'jitsi-meet-logger';
 
+import { executeDialOutRequest } from './react/features/invite/functions';
+import uuid from 'uuid';
+
 import * as JitsiMeetConferenceEvents from './ConferenceEvents';
+
+import { startConference, setPrejoinPageVisibility } from './react/features/prejoin/actions';
+
 import { openConnection } from './connection';
 import { ENDPOINT_TEXT_MESSAGE_NAME } from './modules/API/constants';
 import AuthHandler from './modules/UI/authentication/AuthHandler';
@@ -43,7 +49,8 @@ import {
     onStartMutedPolicyChanged,
     p2pStatusChanged,
     sendLocalParticipant,
-    setDesktopSharingEnabled
+    setDesktopSharingEnabled,
+    _handleParticipantError
 } from './react/features/base/conference';
 import {
     checkAndNotifyForNewDevice,
@@ -140,6 +147,8 @@ const eventEmitter = new EventEmitter();
 let room;
 let connection;
 
+let test;
+
 /**
  * The promise is used when the prejoin screen is shown.
  * While the user configures the devices the connection can be made.
@@ -224,6 +233,68 @@ function getDisplayName(id) {
 
     return participant && participant.name;
 }
+function handleSuccess() {
+    console.log('Successful dial out');
+}
+
+function handleError() {
+    console.log('Dial out failed');
+}
+
+async function dialTest(onSuccess: Function, onFail: Function) {
+    const state = APP.store.getState();
+    const room = state['features/base/conference'].room;
+    console.log(room);
+    const reqId = uuid.v4();
+    console.log(reqId);
+    const url = state['features/base/config'].guestDialOutUrl;
+    const test = state['features/base/config']
+    console.log(JSON.stringify(test));
+    //const url = 'kvzqvajcxjj5wjfn@guest.51.145.136.126/AKCBoB85';
+    //const url = '';
+    console.log(url);
+    const conferenceUrl = `${room}@${state['features/base/config'].hosts.muc}`;
+    console.log(conferenceUrl);
+    //const phoneNumber = state['features/prejoin'].dialOutNumber;
+    const phoneNumber = '7559';
+    console.log(phoneNumber);
+    //const countryCode = state['features/prejoin'].dialOutCountry;
+    const countryCode = { name: "Spain", dialCode: "34", code: "es" };
+    // }
+    console.log(countryCode);
+
+    const body = {
+        conferenceUrl,
+        countryCode,
+        name: phoneNumber,
+        phoneNumber
+    };
+
+    try {
+        await executeDialOutRequest(url, body, reqId);
+
+        dispatch(pollForStatus(reqId, onSuccess, onFail));
+        
+    } catch (err) {
+        const notification = {
+            titleKey: 'prejoin.errorDialOut',
+            titleArguments: undefined
+        };
+
+        if (err.status) {
+            if (err.messageKey === 'validation.failed') {
+                notification.titleKey = 'prejoin.errorValidation';
+            } else {
+                notification.titleKey = 'prejoin.errorStatusCode';
+                notification.titleArguments = { status: err.status };
+            }
+        }
+
+        //dispatch(showErrorNotification(notification));
+        logger.error('Error dialing out', err);
+        onFail();
+    }
+}
 
 /**
  * Mute or unmute local audio stream if it exists.
@@ -292,9 +363,14 @@ class ConferenceConnector {
      *
      */
     _onConferenceFailed(err, ...params) {
+        console.log('prueba fallo conference');
+        
+        //dialTest(handleSuccess, handleError);
         APP.store.dispatch(conferenceFailed(room, err, ...params));
         logger.error('CONFERENCE FAILED:', err, ...params);
-
+        
+        // console.log('Intento de llamada desde ventana de espera:');
+        // APP.store.getState()['features/base/conference'].dial('7618');
         switch (err) {
 
         case JitsiConferenceErrors.NOT_ALLOWED_ERROR: {
@@ -1193,6 +1269,10 @@ export default {
             .length;
     },
 
+    getNParticipants() {
+        return room.getParticipants().length;
+    },
+
     /**
      * Returns the stats.
      */
@@ -1945,7 +2025,7 @@ export default {
             titleKey
         });
     },
-
+    
     /**
      * Setup interaction between conference and UI.
      */
@@ -1971,8 +2051,21 @@ export default {
             user => APP.UI.onUserFeaturesChanged(user));
         room.on(JitsiConferenceEvents.USER_JOINED, (id, user) => {
             // The logic shared between RN and web.
-            commonUserJoinedHandling(APP.store, room, user);
+            console.log('User JOINED:');
+            //console.log(this.getNumberOfParticipantsWithTracks());
+            console.log(this.getNParticipants());
 
+            if(this.getNParticipants() > 1) {
+                test.close();
+            }
+
+            //APP.store.dispatch(setPrejoinPageVisibility(true));
+            console.log(id);
+            console.log('user');
+            // console.log(JSON.stringify(user, getCircularReplacer()));
+
+            commonUserJoinedHandling(APP.store, room, user);
+            
             if (user.isHidden()) {
                 return;
             }
@@ -1995,6 +2088,8 @@ export default {
         });
 
         room.on(JitsiConferenceEvents.USER_STATUS_CHANGED, (id, status) => {
+
+
             APP.store.dispatch(participantPresenceChanged(id, status));
 
             const user = room.getParticipantById(id);
@@ -2523,6 +2618,23 @@ export default {
             = APP.store.getState()['features/base/settings'].displayName;
 
         APP.UI.changeDisplayName('localVideoContainer', displayName);
+
+        // APP.store.dispatch(showNotification({
+        //     descriptionArguments: 'espere a que se una el agente',
+        //     descriptionKey: 'notify.prueba',
+        //     titleKey: 'Test',
+        //     title: 'Por favor,'
+        // },
+        // 500000));
+        
+        // Aquí
+        test = APP.UI.messageHandler.openDialog(
+            'dialog.WaitingForHost',
+            "Por favor, espere al anfitrión",
+            true, null
+        );
+        
+        //test.close();
     },
 
     /**

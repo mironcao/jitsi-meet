@@ -127,7 +127,6 @@ function pollForStatus(
     };
 }
 
-
 /**
  * Action used for joining the meeting with phone audio.
  * A dial out connection is tried and a polling mechanism is used for getting the status.
@@ -143,6 +142,8 @@ export function dialOut(onSuccess: Function, onFail: Function) {
         const state = getState();
         const reqId = uuid.v4();
         const url = getDialOutUrl(state);
+        console.log('Prueba conference url');
+        console.log(url);
         const conferenceUrl = getDialOutConferenceUrl(state);
         const phoneNumber = getFullDialOutNumber(state);
         const countryCode = getDialOutCountry(state).code.toUpperCase();

@@ -126,7 +126,7 @@ export function cancelWaitForOwner() {
  * @returns {Action}
  */
 export function _openLoginDialog() {
-    return openDialog(LoginDialog);
+    return(openDialog(LoginDialog));
 }
 
 /**

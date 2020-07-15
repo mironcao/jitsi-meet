@@ -170,6 +170,14 @@ export function invite(
     };
 }
 
+export function dialOut() {
+    console.log("tries to call");
+    const { conference } = APP.store.getState('features/base/conference');
+    conference.dial('910200838').catch(error =>
+        logger.error('Error calling the provided number:', error));
+}
+
+
 /**
  * Sends AJAX requests for dial-in numbers and conference ID.
  *
@@ -266,3 +274,4 @@ export function removePendingInviteRequests() {
         type: REMOVE_PENDING_INVITE_REQUESTS
     };
 }
+

@@ -701,6 +701,10 @@ export function getDefaultDialInNumber(stateful: Object | Function) {
  * @returns {Object}
  */
 export async function executeDialOutRequest(url: string, body: Object, reqId: string) {
+    // console.log('dialOUT');
+    // console.log(url);
+    // console.log(body);
+    // console.log(reqId);
     const res = await fetch(url, {
         method: 'POST',
         headers: {
@@ -717,7 +721,7 @@ export async function executeDialOutRequest(url: string, body: Object, reqId: st
 
 /**
  * Executes the dial out status request.
- *
+ *qwefv
  * @param {string} url - The url for dialing out.
  * @param {string} reqId - The unique request id used on the dial out request.
  * @returns {Object}

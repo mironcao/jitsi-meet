@@ -11,6 +11,8 @@ import UIUtil from '../util/UIUtil';
 
 import LoginDialog from './LoginDialog';
 
+import { dialOut } from '../../../react/features/invite'
+
 const logger = Logger.getLogger(__filename);
 
 let externalAuthWindow;
@@ -239,6 +241,13 @@ function logout(room) {
  */
 function requireAuth(room, lockPassword) {
     if (authRequiredDialog) {
+        console.log("Requires authentication");
+
+        //dialOut();
+        // return ((dispatch: Dispatch<any>, getState: Function) => {
+        //     dispatch(console.log(getState()['features/base/conference'].room.getParticipants()));
+        //     dispatch(openDialog(LoginDialog));
+        // });
         return;
     }
 
