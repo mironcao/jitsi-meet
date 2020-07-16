@@ -189,6 +189,23 @@ const commands = {
     SHARED_VIDEO: 'shared-video'
 };
 
+function simpleStringify(object){
+    var simpleObject = {};
+    for (var prop in object ){
+        if (!object.hasOwnProperty(prop)){
+            continue;
+        }
+        if (typeof(object[prop]) == 'object'){
+            continue;
+        }
+        if (typeof(object[prop]) == 'function'){
+            continue;
+        }
+        simpleObject[prop] = object[prop];
+    }
+    return JSON.stringify(simpleObject); // returns cleaned up JSON
+};
+
 /**
  * Open Connection. When authentication failed it shows auth dialog.
  * @param roomName the room name to use
@@ -2000,19 +2017,19 @@ export default {
             console.log(this.getNParticipants());
 
             //APP.store.dispatch(setPrejoinPageVisibility(true));
-            console.log(id);
-            console.log('user');
-            // console.log(JSON.stringify(user, getCircularReplacer()));
 
             commonUserJoinedHandling(APP.store, room, user);
-            
+
             if (user.isHidden()) {
+                if(this.getNParticipants() > 1) {
+                    waitingRoom.close();
+                }
                 return;
             }
 
             logger.log(`USER ${id} connnected:`, user);
             APP.UI.addUser(user);
-
+            
             if(this.getNParticipants() > 1) {
                 waitingRoom.close();
             }
