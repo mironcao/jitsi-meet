@@ -147,7 +147,7 @@ const eventEmitter = new EventEmitter();
 let room;
 let connection;
 
-let test;
+let waitingRoom;
 
 /**
  * The promise is used when the prejoin screen is shown.
@@ -241,61 +241,6 @@ function handleError() {
     console.log('Dial out failed');
 }
 
-async function dialTest(onSuccess: Function, onFail: Function) {
-    const state = APP.store.getState();
-    const room = state['features/base/conference'].room;
-    console.log(room);
-    const reqId = uuid.v4();
-    console.log(reqId);
-    const url = state['features/base/config'].guestDialOutUrl;
-    const test = state['features/base/config']
-    console.log(JSON.stringify(test));
-    //const url = 'kvzqvajcxjj5wjfn@guest.51.145.136.126/AKCBoB85';
-    //const url = '';
-    console.log(url);
-    const conferenceUrl = `${room}@${state['features/base/config'].hosts.muc}`;
-    console.log(conferenceUrl);
-    //const phoneNumber = state['features/prejoin'].dialOutNumber;
-    const phoneNumber = '7559';
-    console.log(phoneNumber);
-    //const countryCode = state['features/prejoin'].dialOutCountry;
-    const countryCode = { name: "Spain", dialCode: "34", code: "es" };
-    // }
-    console.log(countryCode);
-
-    const body = {
-        conferenceUrl,
-        countryCode,
-        name: phoneNumber,
-        phoneNumber
-    };
-
-    try {
-        await executeDialOutRequest(url, body, reqId);
-
-        dispatch(pollForStatus(reqId, onSuccess, onFail));
-        
-    } catch (err) {
-        const notification = {
-            titleKey: 'prejoin.errorDialOut',
-            titleArguments: undefined
-        };
-
-        if (err.status) {
-            if (err.messageKey === 'validation.failed') {
-                notification.titleKey = 'prejoin.errorValidation';
-            } else {
-                notification.titleKey = 'prejoin.errorStatusCode';
-                notification.titleArguments = { status: err.status };
-            }
-        }
-
-        //dispatch(showErrorNotification(notification));
-        logger.error('Error dialing out', err);
-        onFail();
-    }
-}
-
 /**
  * Mute or unmute local audio stream if it exists.
  * @param {boolean} muted - if audio stream should be muted or unmuted.
@@ -365,7 +310,6 @@ class ConferenceConnector {
     _onConferenceFailed(err, ...params) {
         console.log('prueba fallo conference');
         
-        //dialTest(handleSuccess, handleError);
         APP.store.dispatch(conferenceFailed(room, err, ...params));
         logger.error('CONFERENCE FAILED:', err, ...params);
         
@@ -2055,10 +1999,6 @@ export default {
             //console.log(this.getNumberOfParticipantsWithTracks());
             console.log(this.getNParticipants());
 
-            if(this.getNParticipants() > 1) {
-                test.close();
-            }
-
             //APP.store.dispatch(setPrejoinPageVisibility(true));
             console.log(id);
             console.log('user');
@@ -2072,6 +2012,10 @@ export default {
 
             logger.log(`USER ${id} connnected:`, user);
             APP.UI.addUser(user);
+
+            if(this.getNParticipants() > 1) {
+                waitingRoom.close();
+            }
         });
 
         room.on(JitsiConferenceEvents.USER_LEFT, (id, user) => {
@@ -2628,12 +2572,11 @@ export default {
         // 500000));
         
         // Aquí
-        test = APP.UI.messageHandler.openDialog(
+        waitingRoom = APP.UI.messageHandler.openDialog(
             'dialog.WaitingForHost',
             "Por favor, espere al anfitrión",
             true, null
         );
-        
         //test.close();
     },
 
