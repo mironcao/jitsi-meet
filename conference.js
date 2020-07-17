@@ -2015,7 +2015,7 @@ export default {
             console.log('User JOINED:');
             //console.log(this.getNumberOfParticipantsWithTracks());
             console.log(this.getNParticipants());
-
+            console.log(simpleStringify(user));
             //APP.store.dispatch(setPrejoinPageVisibility(true));
 
             commonUserJoinedHandling(APP.store, room, user);

@@ -72,6 +72,28 @@ const DISPLAY_VIDEO_WITH_NAME = 3;
  */
 const DISPLAY_AVATAR_WITH_NAME = 4;
 
+function simpleStringify(object){
+    var simpleObject = {};
+    for (var prop in object ){
+        if (!object.hasOwnProperty(prop)){
+            continue;
+        }
+        if (typeof(object[prop]) == 'object'){
+            continue;
+        }
+        if (typeof(object[prop]) == 'function'){
+            continue;
+        }
+        simpleObject[prop] = object[prop];
+    }
+    return JSON.stringify(simpleObject); // returns cleaned up JSON
+};
+
+/**
+ * Hide the user
+ */
+const DISPLAY_NOTHING = 5;
+
 
 /**
  *
@@ -450,6 +472,17 @@ export default class SmallVideo {
      * or <tt>DISPLAY_BLACKNESS_WITH_NAME</tt>.
      */
     selectDisplayMode(input) {
+        console.log(JSON.stringify(input));
+        //return DISPLAY_NOTHING;
+        /*
+        const jitsiParticipant = APP.conference.getParticipantById(this.id);
+        if(jitsiParticipant._displayName) {
+            if(!isNaN(jitsiParticipant._displayName)) {
+                console.log(jitsiParticipant._displayName);
+                return DISPLAY_NOTHING;
+            }
+        }*/
+
         // Display name is always and only displayed when user is on the stage
         if (input.isCurrentlyOnLargeVideo && !input.tileViewEnabled) {
             return input.isVideoPlayable && !input.isAudioOnly ? DISPLAY_BLACKNESS_WITH_NAME : DISPLAY_AVATAR_WITH_NAME;
@@ -493,7 +526,7 @@ export default class SmallVideo {
     _isHovered() {
         return this.videoIsHovered || this._popoverIsHovered;
     }
-
+    
     /**
      * Updates the css classes of the thumbnail based on the current state.
      */
@@ -507,7 +540,30 @@ export default class SmallVideo {
         const displayModeInput = this.computeDisplayModeInput();
 
         // Determine whether video, avatar or blackness should be displayed
-        this.displayMode = this.selectDisplayMode(displayModeInput);
+
+        //Modificaciones
+        try {
+            if(typeof APP.conference.getParticipantById(this.id) !== 'undefined' 
+                && typeof APP.conference.getParticipantById(this.id)._supportsDTMF !== 'undefined' 
+                && (APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
+                this.displayMode = DISPLAY_NOTHING;
+            } else {
+                this.displayMode = this.selectDisplayMode(displayModeInput);
+            }
+        } catch {
+            this.displayMode = this.selectDisplayMode(displayModeInput);
+        }
+
+
+        /*
+        // Semi estable
+        if(typeof APP.conference.getParticipantById(this.id) !== 'undefined' 
+            && typeof APP.conference.getParticipantById(this.id)._supportsDTMF !== 'undefined' 
+            && (APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
+            this.displayMode = DISPLAY_NOTHING;
+        } else {
+            this.displayMode = this.selectDisplayMode(displayModeInput);
+        }*/
 
         switch (this.displayMode) {
         case DISPLAY_AVATAR_WITH_NAME:
@@ -525,6 +581,11 @@ export default class SmallVideo {
         case DISPLAY_VIDEO_WITH_NAME:
             displayModeString = 'video-with-name';
             this.$container.addClass('display-name-on-video');
+            break;
+        case DISPLAY_NOTHING:
+            displayModeString = 'nothing';
+            //this.$container.addClass('display-nothing');
+            this.$container.hide();
             break;
         case DISPLAY_AVATAR:
         default:

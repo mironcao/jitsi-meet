@@ -315,6 +315,7 @@ const VideoLayout = {
         remoteVideos[id] = remoteVideo;
 
         // Initialize the view
+        //console.log("Se actualiza la vista");
         remoteVideo.updateView();
     },
 
@@ -685,6 +686,7 @@ const VideoLayout = {
      * Handles user's features changes.
      */
     onUserFeaturesChanged(user) {
+        //this.getSmallVideo(user.getId()).updateView();
         const video = this.getSmallVideo(user.getId());
 
         if (!video) {
