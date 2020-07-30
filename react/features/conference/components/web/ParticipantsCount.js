@@ -44,11 +44,11 @@ class ParticipantsCount extends PureComponent<Props> {
      */
     constructor(props: Props) {
         super(props);
-
-        this._onClick = this._onClick.bind(this);
+        // Modificado
+        //this._onClick = this._onClick.bind(this);
     }
 
-    _onClick: () => void;
+    //_onClick: () => void;
 
     /**
      * Callback invoked to display {@code SpeakerStats}.
@@ -69,6 +69,9 @@ class ParticipantsCount extends PureComponent<Props> {
      * @returns {ReactElement}
      */
     render() {
+        // Modificado
+        return (<div></div>);
+        /*
         return (
             <div
                 className = 'participants-count'
@@ -78,7 +81,7 @@ class ParticipantsCount extends PureComponent<Props> {
                 </span>
                 <span className = 'participants-count-icon' />
             </div>
-        );
+        );*/
     }
 }
 

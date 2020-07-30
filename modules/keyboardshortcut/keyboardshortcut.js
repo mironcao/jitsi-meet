@@ -204,12 +204,14 @@ const KeyboardShortcut = {
         this._addShortcutToHelp('SPACE', 'keyboardShortcuts.pushToTalk');
 
         if (!interfaceConfig.filmStripOnly) {
+            // Modificado
+            /*
             this.registerShortcut('T', null, () => {
                 sendAnalytics(createShortcutEvent('speaker.stats'));
                 APP.store.dispatch(toggleDialog(SpeakerStats, {
                     conference: APP.conference
                 }));
-            }, 'keyboardShortcuts.showSpeakerStats');
+            }, 'keyboardShortcuts.showSpeakerStats');*/
         }
 
         /**

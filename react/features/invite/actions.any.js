@@ -71,13 +71,14 @@ export function invite(
         const state = getState();
         const participants = getParticipants(state);
         const { calleeInfoVisible } = state['features/invite'];
-
+        
+        // Modificado true->false
         if (showCalleeInfo
                 && !calleeInfoVisible
                 && invitees.length === 1
                 && invitees[0].type === 'user'
                 && participants.length === 1) {
-            dispatch(setCalleeInfoVisible(true, invitees[0]));
+            dispatch(setCalleeInfoVisible(false, invitees[0]));
         }
 
         const { conference } = state['features/base/conference'];
@@ -236,7 +237,7 @@ export function updateDialInNumbers() {
  * }}
  */
 export function setCalleeInfoVisible(
-        calleeInfoVisible: boolean,
+        calleeInfoVisible = false,
         initialCalleeInfo: ?Object) {
     return {
         type: SET_CALLEE_INFO_VISIBLE,

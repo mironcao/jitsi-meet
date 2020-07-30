@@ -538,14 +538,10 @@ export default class SmallVideo {
         let displayModeString = '';
 
         const displayModeInput = this.computeDisplayModeInput();
-
-        // Determine whether video, avatar or blackness should be displayed
-
-        //Modificaciones
+        // Version Final
+        //Modificado
         try {
-            if(typeof APP.conference.getParticipantById(this.id) !== 'undefined' 
-                && typeof APP.conference.getParticipantById(this.id)._supportsDTMF !== 'undefined' 
-                && (APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
+            if((APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
                 this.displayMode = DISPLAY_NOTHING;
             } else {
                 this.displayMode = this.selectDisplayMode(displayModeInput);
@@ -553,17 +549,6 @@ export default class SmallVideo {
         } catch {
             this.displayMode = this.selectDisplayMode(displayModeInput);
         }
-
-
-        /*
-        // Semi estable
-        if(typeof APP.conference.getParticipantById(this.id) !== 'undefined' 
-            && typeof APP.conference.getParticipantById(this.id)._supportsDTMF !== 'undefined' 
-            && (APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
-            this.displayMode = DISPLAY_NOTHING;
-        } else {
-            this.displayMode = this.selectDisplayMode(displayModeInput);
-        }*/
 
         switch (this.displayMode) {
         case DISPLAY_AVATAR_WITH_NAME:
@@ -582,6 +567,7 @@ export default class SmallVideo {
             displayModeString = 'video-with-name';
             this.$container.addClass('display-name-on-video');
             break;
+        //Modificado
         case DISPLAY_NOTHING:
             displayModeString = 'nothing';
             //this.$container.addClass('display-nothing');

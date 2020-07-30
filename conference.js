@@ -2021,7 +2021,8 @@ export default {
             commonUserJoinedHandling(APP.store, room, user);
 
             if (user.isHidden()) {
-                if(this.getNParticipants() > 1) {
+                //Modificado
+                if(waitingRoom && this.getNParticipants() > 1) {
                     waitingRoom.close();
                 }
                 return;
@@ -2030,6 +2031,7 @@ export default {
             logger.log(`USER ${id} connnected:`, user);
             APP.UI.addUser(user);
             
+            //Modificado
             if(this.getNParticipants() > 1) {
                 waitingRoom.close();
             }
@@ -2588,7 +2590,8 @@ export default {
         // },
         // 500000));
         
-        // Aquí
+        // Modificado
+        
         waitingRoom = APP.UI.messageHandler.openDialog(
             'dialog.WaitingForHost',
             "Por favor, espere al anfitrión",
