@@ -2023,7 +2023,9 @@ export default {
             if (user.isHidden()) {
                 //Modificado
                 if(waitingRoom && this.getNParticipants() > 1) {
-                    waitingRoom.close();
+                    if(waitingRoom !== 'undefined') {
+                        waitingRoom.close();
+                    }
                 }
                 return;
             }
@@ -2033,7 +2035,10 @@ export default {
             
             //Modificado
             if(this.getNParticipants() > 1) {
-                waitingRoom.close();
+                if(waitingRoom !== 'undefined') {
+                    // Peticion bbdd
+                    waitingRoom.close();
+                }
             }
         });
 
@@ -2592,6 +2597,7 @@ export default {
         
         // Modificado
         
+        // bbdd entra usuario
         waitingRoom = APP.UI.messageHandler.openDialog(
             'dialog.WaitingForHost',
             "Por favor, espere al anfitrión",
