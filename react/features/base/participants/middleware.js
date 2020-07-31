@@ -328,12 +328,15 @@ function _maybePlaySounds({ getState, dispatch }, action) {
 
         // The sounds for the poltergeist are handled by features/invite.
         // Modificado
-        // if (presence !== INVITED && presence !== CALLING && !action.participant.local._supportsDTMF) {
+        if (presence !== INVITED && presence !== CALLING) {
+            if(!action.participant._supportsDTMF){
+                dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
+            }
+        }
+        // Original
+        // if (presence !== INVITED && presence !== CALLING) {
         //     dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
         // }
-        if (presence !== INVITED && presence !== CALLING) {
-            dispatch(playSound(PARTICIPANT_JOINED_SOUND_ID));
-        }
         } else if (action.type === PARTICIPANT_LEFT) {
             dispatch(playSound(PARTICIPANT_LEFT_SOUND_ID));
         }
