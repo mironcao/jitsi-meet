@@ -78,7 +78,8 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
 
     // Modificado 
     
-    if (!isRoomValid(state['features/base/conference'].room)) {
+    if (!isRoomValid(state['features/base/conference'].room)) { // && query) {
+        //window.location.href = '/static/paginaespera.html';
         return;
     }
 
