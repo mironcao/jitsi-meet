@@ -149,6 +149,10 @@ let connection;
 
 let waitingRoom;
 
+let myTimer;
+
+let numbAux;
+
 /**
  * The promise is used when the prejoin screen is shown.
  * While the user configures the devices the connection can be made.
@@ -187,6 +191,20 @@ const commands = {
     EMAIL: EMAIL_COMMAND,
     ETHERPAD: 'etherpad',
     SHARED_VIDEO: 'shared-video'
+};
+
+function waitFor(conditionFunction, exit) {
+
+    const poll = resolve => {
+      if(conditionFunction()) {
+          resolve();
+      } else if (exit) {
+          return false;
+      }
+      else setTimeout(_ => poll(resolve), 400);
+    }
+  
+    return new Promise(poll);
 };
 
 function simpleStringify(object){
@@ -2043,12 +2061,62 @@ export default {
         });
 
         room.on(JitsiConferenceEvents.USER_LEFT, (id, user) => {
+            numbAux = 0;
             // The logic shared between RN and web.
             commonUserLeftHandling(APP.store, room, user);
+
+            // Version salir de sala
+            // let partsize = room.getParticipants().length + 1;
+
+            // console.log("Initial participant list size: " + partsize);
+
+            // console.log("xd");
+            // console.log(this.getNParticipants());
+
 
             if (user.isHidden()) {
                 return;
             }
+            
+            // Version salir de sala
+            // if(user.isModerator()) {
+            //     let c = 0;
+            //     myTimer = setInterval(testReconnect, 5000);
+            //     let reconnected = false;
+
+            //     function testReconnect() {
+            //         let partsize = room.getParticipants().length + 1;
+            //         console.log(partsize);
+            //         console.log("Entra en el check: " + c);
+            //         c = c+1;
+            //         if(partsize <= 2) {
+            //             console.log('No se ha reconectado aun');
+            //             reconnected = false;
+            //             if(c > 9) {
+            //                 clearInterval(myTimer);
+            //             } else {
+            //                 return;
+            //             }
+            //         } else if (partsize > 2) {
+            //             console.log('Se ha reconectado');
+            //             clearInterval(myTimer);
+            //             reconnected = true;
+            //         }
+
+            //         console.log(c)
+            //         console.log(reconnected)
+            //         if( c> 9 && numbAux===0 ) {
+            //             console.log("No se reconecta, kickeamos al resto")
+            //             let participants = APP.conference.listMembers();
+            //             participants.forEach(participant => {
+            //             APP.store.dispatch(kickedOut(room, participant));
+            //             document.location.href = "/";
+            //             this.leaveRoomAndDisconnect();
+            //         });
+            //         this.leaveRoomAndDisconnect();
+            //         }
+            //     };
+            // }
 
             logger.log(`USER ${id} LEFT:`, user);
 
@@ -2057,7 +2125,9 @@ export default {
 
         room.on(JitsiConferenceEvents.USER_STATUS_CHANGED, (id, status) => {
 
-
+            console.log("Status changed:");
+            console.log(status);
+            
             APP.store.dispatch(participantPresenceChanged(id, status));
 
             const user = room.getParticipantById(id);
@@ -2150,6 +2220,7 @@ export default {
         });
 
         room.on(JitsiConferenceEvents.CONNECTION_RESTORED, () => {
+            numbAux = 1;
             APP.store.dispatch(localParticipantConnectionStatusChanged(
                 JitsiParticipantConnectionStatus.ACTIVE));
         });

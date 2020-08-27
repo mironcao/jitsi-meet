@@ -78,9 +78,36 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
 
     // Modificado 
     
-    if (!isRoomValid(state['features/base/conference'].room)) { // && query) {
-        //window.location.href = '/static/paginaespera.html';
-        return;
+    console.log("Prueba nombre sala: " + window.location.pathname);
+
+    const stateURL = {'page_id' : 1, 'user_id': 5};
+    const title = '';
+    
+    if (!isRoomValid(state['features/base/conference'].room) || true) {
+        const url = window.location.href;
+        const roomName = window.location.pathname.slice(1);
+        console.log(roomName);
+        var headers = new Headers();
+
+        var reqH2 = {
+            method: 'GET',
+            headers: headers,
+            mode: 'cors',
+            cache: 'default'
+        };
+
+        history.pushState(stateURL, title, url);
+
+        fetch('https://videoconferencia.alisys.net/api/webservice?token=' + roomName, reqH2)
+            .then((response) => {
+                if (response.status === 200) {
+                    console.log("Received status 200");
+                } else {
+                    console.log("Didnt get status 200");
+                    window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
+                    return;
+                }
+            });
     }
 
     const route = _getEmptyRoute();
