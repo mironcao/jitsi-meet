@@ -125,6 +125,9 @@ import {
 import { showNotification } from './react/features/notifications';
 import { mediaPermissionPromptVisibilityChanged } from './react/features/overlay';
 import { suspendDetected } from './react/features/power-monitor';
+
+import { sendMessage } from './react/features/chat';
+
 import {
     initPrejoin,
     isPrejoinPageEnabled,
@@ -151,7 +154,7 @@ let waitingRoom;
 
 let myTimer;
 
-let numbAux;
+let crash = 0;
 
 /**
  * The promise is used when the prejoin screen is shown.
@@ -2054,24 +2057,25 @@ export default {
             //Modificado
             if(this.getNParticipants() > 1) {
                 if(waitingRoom !== 'undefined') {
-                    // Peticion bbdd
                     waitingRoom.close();
                 }
             }
         });
 
         room.on(JitsiConferenceEvents.USER_LEFT, (id, user) => {
-            numbAux = 0;
             // The logic shared between RN and web.
             commonUserLeftHandling(APP.store, room, user);
 
+            // console.log('mensaje en chat');
+            // sendMessage("prueba", true);
+            // sendMessage("prueba2", false);
+
             // Version salir de sala
-            // let partsize = room.getParticipants().length + 1;
+            let partsize = room.getParticipants().length + 1;
 
-            // console.log("Initial participant list size: " + partsize);
+            console.log("Initial participant list size: " + partsize);
 
-            // console.log("xd");
-            // console.log(this.getNParticipants());
+            console.log("Number of participants: " + this.getNParticipants());
 
 
             if (user.isHidden()) {
@@ -2079,44 +2083,56 @@ export default {
             }
             
             // Version salir de sala
-            // if(user.isModerator()) {
-            //     let c = 0;
-            //     myTimer = setInterval(testReconnect, 5000);
-            //     let reconnected = false;
+            if(!user.isModerator()) {
+                let c = 0;
+                myTimer = setInterval(testReconnect, 5000);
+                let reconnected = false;
 
-            //     function testReconnect() {
-            //         let partsize = room.getParticipants().length + 1;
-            //         console.log(partsize);
-            //         console.log("Entra en el check: " + c);
-            //         c = c+1;
-            //         if(partsize <= 2) {
-            //             console.log('No se ha reconectado aun');
-            //             reconnected = false;
-            //             if(c > 9) {
-            //                 clearInterval(myTimer);
-            //             } else {
-            //                 return;
-            //             }
-            //         } else if (partsize > 2) {
-            //             console.log('Se ha reconectado');
-            //             clearInterval(myTimer);
-            //             reconnected = true;
-            //         }
+                function testReconnect() {
+                    let participants = APP.conference.listMembers();
+                    participants.forEach(participant => {
+                    console.log(participant.id);
+                    console.log(participant._connectionStatus);
+                    });
+                    console.log("---USER---");
+                    console.log(user._connectionStatus);
+                    partsize = room.getParticipants().length + 1;
+                    console.log("Number of participants: " + partsize);
+                    console.log("Entra en el check: " + c);
+                    c = c+1;
+                    if(partsize < 3) {
+                        console.log('No se ha reconectado aun');
+                        reconnected = false;
+                        console.log("Crash variable per loop: " + crash);
+                        if (crash === 1) {
+                            clearInterval(myTimer);
+                        }
+                        if(c > 9) {
+                            clearInterval(myTimer);
+                        } else {
+                            return;
+                        }
+                    } else if (partsize >= 3) {
+                        console.log('Se ha reconectado');
+                        clearInterval(myTimer);
+                        reconnected = true;
+                    }
 
-            //         console.log(c)
-            //         console.log(reconnected)
-            //         if( c> 9 && numbAux===0 ) {
-            //             console.log("No se reconecta, kickeamos al resto")
-            //             let participants = APP.conference.listMembers();
-            //             participants.forEach(participant => {
-            //             APP.store.dispatch(kickedOut(room, participant));
-            //             document.location.href = "/";
-            //             this.leaveRoomAndDisconnect();
-            //         });
-            //         this.leaveRoomAndDisconnect();
-            //         }
-            //     };
-            // }
+                    console.log(c)
+                    console.log(reconnected)
+                    console.log("CRASH = " + crash)
+                    if( c> 9  || crash === 1) {
+                        console.log("No se reconecta, kickeamos al resto")
+                        //let participants = APP.conference.listMembers();
+                        participants.forEach(participant => {
+                        APP.store.dispatch(kickedOut(room, participant));
+                        document.location.href = "/";
+                        this.leaveRoomAndDisconnect();
+                    });
+                    this.leaveRoomAndDisconnect();
+                    }
+                };
+            }
 
             logger.log(`USER ${id} LEFT:`, user);
 
@@ -2131,6 +2147,8 @@ export default {
             APP.store.dispatch(participantPresenceChanged(id, status));
 
             const user = room.getParticipantById(id);
+            console.log("Previous status:");
+            console.log(simpleStringify(user));
 
             if (user) {
                 APP.UI.updateUserStatus(user, status);
@@ -2220,7 +2238,6 @@ export default {
         });
 
         room.on(JitsiConferenceEvents.CONNECTION_RESTORED, () => {
-            numbAux = 1;
             APP.store.dispatch(localParticipantConnectionStatusChanged(
                 JitsiParticipantConnectionStatus.ACTIVE));
         });
@@ -2387,11 +2404,15 @@ export default {
 
         // call hangup
         APP.UI.addListener(UIEvents.HANGUP, () => {
+            console.log("Llega a hangup");
+            crash === 1;
             this.hangup(true);
         });
 
         // logout
         APP.UI.addListener(UIEvents.LOGOUT, () => {
+            console.log("Llega a logout");
+            crash === 1;
             AuthHandler.logout(room).then(url => {
                 if (url) {
                     UIUtil.redirect(url);
@@ -2668,7 +2689,6 @@ export default {
         
         // Modificado
         
-        // bbdd entra usuario
         waitingRoom = APP.UI.messageHandler.openDialog(
             'dialog.WaitingForHost',
             "Por favor, espere al anfitrión",
@@ -2964,8 +2984,10 @@ export default {
      * requested
      */
     hangup(requestFeedback = false) {
+        crash = 1;
+        console.log("LLEGA");
+        console.log("crash = " + crash);
         eventEmitter.emit(JitsiMeetConferenceEvents.BEFORE_HANGUP);
-
         this._stopProxyConnection();
 
         APP.store.dispatch(destroyLocalTracks());
@@ -3017,12 +3039,17 @@ export default {
      * @returns {Promise}
      */
     leaveRoomAndDisconnect() {
+        crash = 1;
+        console.log("LLEGA");
+        console.log("crash = " + crash);
         APP.store.dispatch(conferenceWillLeave(room));
 
         if (room && room.isJoined()) {
+            crash = 1;
             return room.leave().then(disconnect, disconnect);
         }
 
+        crash = 2;
         return disconnect();
     },
 
