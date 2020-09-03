@@ -83,7 +83,7 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
     const stateURL = {'page_id' : 1, 'user_id': 5};
     const title = '';
     
-    if (!isRoomValid(state['features/base/conference'].room)) {// || true) {
+    if (!isRoomValid(state['features/base/conference'].room)  || true) {
         const url = window.location.href;
         const roomName = window.location.pathname.slice(1);
         console.log(roomName);

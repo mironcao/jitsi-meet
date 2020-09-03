@@ -2071,12 +2071,6 @@ export default {
             // sendMessage("prueba2", false);
 
             // Version salir de sala
-            let partsize = room.getParticipants().length + 1;
-
-            console.log("Initial participant list size: " + partsize);
-
-            console.log("Number of participants: " + this.getNParticipants());
-
 
             if (user.isHidden()) {
                 return;
@@ -2084,56 +2078,13 @@ export default {
             
             // Version salir de sala
             if(!user.isModerator()) {
-                let c = 0;
-                myTimer = setInterval(testReconnect, 5000);
-                let reconnected = false;
-
-                function testReconnect() {
-                    let participants = APP.conference.listMembers();
-                    participants.forEach(participant => {
-                    console.log(participant.id);
-                    console.log(participant._connectionStatus);
-                    });
-                    console.log("---USER---");
-                    console.log(user._connectionStatus);
-                    partsize = room.getParticipants().length + 1;
-                    console.log("Number of participants: " + partsize);
-                    console.log("Entra en el check: " + c);
-                    c = c+1;
-                    if(partsize < 3) {
-                        console.log('No se ha reconectado aun');
-                        reconnected = false;
-                        console.log("Crash variable per loop: " + crash);
-                        if (crash === 1) {
-                            clearInterval(myTimer);
-                        }
-                        if(c > 9) {
-                            clearInterval(myTimer);
-                        } else {
-                            return;
-                        }
-                    } else if (partsize >= 3) {
-                        console.log('Se ha reconectado');
-                        clearInterval(myTimer);
-                        reconnected = true;
-                    }
-
-                    console.log(c)
-                    console.log(reconnected)
-                    console.log("CRASH = " + crash)
-                    if( c> 9  || crash === 1) {
-                        console.log("No se reconecta, kickeamos al resto")
-                        //let participants = APP.conference.listMembers();
-                        participants.forEach(participant => {
-                        APP.store.dispatch(kickedOut(room, participant));
-                        document.location.href = "/";
-                        this.leaveRoomAndDisconnect();
-                    });
+                let participants = APP.conference.listMembers();
+                participants.forEach(participant => {
+                    APP.store.dispatch(kickedOut(room, participant));
+                    document.location.href = "/";
                     this.leaveRoomAndDisconnect();
-                    }
-                };
+                });
             }
-
             logger.log(`USER ${id} LEFT:`, user);
 
             APP.UI.onSharedVideoStop(id);
