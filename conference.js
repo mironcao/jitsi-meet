@@ -345,9 +345,7 @@ class ConferenceConnector {
     /**
      *
      */
-    _onConferenceFailed(err, ...params) {
-        console.log('prueba fallo conference');
-        
+    _onConferenceFailed(err, ...params) {        
         APP.store.dispatch(conferenceFailed(room, err, ...params));
         logger.error('CONFERENCE FAILED:', err, ...params);
         
@@ -2033,9 +2031,6 @@ export default {
             user => APP.UI.onUserFeaturesChanged(user));
         room.on(JitsiConferenceEvents.USER_JOINED, (id, user) => {
             // The logic shared between RN and web.
-            console.log('User JOINED:');
-            //console.log(this.getNumberOfParticipantsWithTracks());
-            console.log(this.getNParticipants());
             console.log(simpleStringify(user));
             //APP.store.dispatch(setPrejoinPageVisibility(true));
 
@@ -2079,9 +2074,10 @@ export default {
             // Version salir de sala
             if(!user.isModerator()) {
                 let participants = APP.conference.listMembers();
+                const roomName = window.location.pathname.slice(1);
                 participants.forEach(participant => {
                     APP.store.dispatch(kickedOut(room, participant));
-                    document.location.href = "/";
+                    window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
                     this.leaveRoomAndDisconnect();
                 });
             }
@@ -2092,13 +2088,9 @@ export default {
 
         room.on(JitsiConferenceEvents.USER_STATUS_CHANGED, (id, status) => {
 
-            console.log("Status changed:");
-            console.log(status);
-            
             APP.store.dispatch(participantPresenceChanged(id, status));
 
             const user = room.getParticipantById(id);
-            console.log("Previous status:");
             console.log(simpleStringify(user));
 
             if (user) {
@@ -2355,14 +2347,12 @@ export default {
 
         // call hangup
         APP.UI.addListener(UIEvents.HANGUP, () => {
-            console.log("Llega a hangup");
             crash === 1;
             this.hangup(true);
         });
 
         // logout
         APP.UI.addListener(UIEvents.LOGOUT, () => {
-            console.log("Llega a logout");
             crash === 1;
             AuthHandler.logout(room).then(url => {
                 if (url) {
@@ -2936,8 +2926,6 @@ export default {
      */
     hangup(requestFeedback = false) {
         crash = 1;
-        console.log("LLEGA");
-        console.log("crash = " + crash);
         eventEmitter.emit(JitsiMeetConferenceEvents.BEFORE_HANGUP);
         this._stopProxyConnection();
 
@@ -2991,8 +2979,6 @@ export default {
      */
     leaveRoomAndDisconnect() {
         crash = 1;
-        console.log("LLEGA");
-        console.log("crash = " + crash);
         APP.store.dispatch(conferenceWillLeave(room));
 
         if (room && room.isJoined()) {
