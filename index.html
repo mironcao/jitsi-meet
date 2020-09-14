@@ -152,6 +152,95 @@
     <!--#include virtual="plugin.head.html" -->
     <!--#include virtual="static/welcomePageAdditionalContent.html" -->
     <!--#include virtual="static/settingsToolbarAdditionalContent.html" -->
+  <script>
+$(document).ready(function() {
+
+
+	setTimeout(function() {
+		var lista = $('.button-group-left .toolbox-button');
+		var elementos = lista.length;
+		
+		$('.button-group-left .toolbox-button').each(function(idx) {
+			if (idx==1) {
+				$(this).css('display','none');
+			}				
+		});
+	}, 3000);
+	
+	setTimeout(function() {
+		lista = $('.button-group-right .toolbox-button');
+		elementos = lista.length;
+		$('.button-group-right .toolbox-button').each(function(idx) {
+			if ((idx==elementos-2) || (idx==elementos-3)){
+				$(this).css('display','none');
+			}
+			if (idx == elementos-1) {
+				$(this).click(
+					function(){ 
+						setTimeout(function() {
+							var listItems = $(".overflow-menu li");		
+							var top = 0;
+							listItems.each(function(idx, li) {
+								if ($(li).text() == "Alzar la mano") {
+									$(li).remove();
+									top += 20;									
+								}
+								if ($(li).text() == "Invitar personas") {
+									$(li).remove();
+									top += 20
+								}
+								if ($(li).text() == "Opciones de seguridad") {
+									$(li).remove();
+									top += 20;
+								}
+								if ($(li).text() == "Iniciar transmisión en vivo") {
+									$(li).remove();
+									top += 20;
+								}
+								if ($(li).text() == "Iniciar la grabación") {
+									$(li).remove();
+									top += 20;
+								}
+								if ($(li).text() == "Compartir un vídeo de YouTube") {
+									$(li).remove();
+									top += 20;
+								}
+								if ($(li).text() == "Silenciar a todos") {
+									$(li).remove();
+									top += 20;
+								}
+								if ($(li).text() == "Estadísticas del locutor"){
+									$(li).remove();									
+									top += 20;
+								}
+								if ($(li).text() == "Ver accesos directos"){
+									$(li).remove();
+									top += 20;
+								}
+							});
+							$(".overflow-menu").parent().parent().css("top",top+"px");		
+						},20);
+					}
+					
+				);
+			}	
+		});
+	},1000);
+	$(".remotevideomenu").mouseover(function() {
+		setTimeout(function() {
+			$(".remotevideomenu").find(".popupmenu li").each(function(idx, li) {
+				if ($(li).text()=="Silenciar a todos") {
+					$(li).remove();
+				}	
+				if ($(li).text()=="Expulsar") {
+					$(li).remove();
+				}
+			});
+		},20);
+	});
+});
+
+  </script>
   </head>
   <body>
     <!--#include virtual="body.html" -->

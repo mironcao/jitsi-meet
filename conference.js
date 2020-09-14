@@ -2077,7 +2077,7 @@ export default {
                 const roomName = window.location.pathname.slice(1);
                 participants.forEach(participant => {
                     APP.store.dispatch(kickedOut(room, participant));
-                    window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
+                    window.location.href = 'https://videoconferencia.alisys.net/api/gracias?' + roomName;
                     this.leaveRoomAndDisconnect();
                 });
             }
