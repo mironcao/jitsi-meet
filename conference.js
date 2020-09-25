@@ -224,7 +224,8 @@ function simpleStringify(object){
         }
         simpleObject[prop] = object[prop];
     }
-    return JSON.stringify(simpleObject); // returns cleaned up JSON
+    // devolvemos el JSON limpiado, sin dependencias circulares
+    return JSON.stringify(simpleObject);
 };
 
 /**
