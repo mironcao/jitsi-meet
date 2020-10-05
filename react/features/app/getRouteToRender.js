@@ -3,7 +3,7 @@
 import { generateRoomWithoutSeparator } from 'js-utils/random';
 import type { Component } from 'react';
 
-import { isRoomValid } from '../base/conference';
+import { isRoomValid, isRoomPrueba } from '../base/conference';
 import { isSupportedBrowser } from '../base/environment';
 import { toState } from '../base/redux';
 import { Conference } from '../conference';
@@ -81,7 +81,10 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
     const title = '';
     
     if (!isRoomValid(state['features/base/conference'].room) || true) {
-        const url = window.location.href;
+        if(isRoomPrueba(window.location.href)) {
+            console.log('sala prueba');
+        } else {
+            const url = window.location.href;
         const roomName = window.location.pathname.slice(1);
         //console.log(roomName);
         var headers = new Headers();
@@ -105,6 +108,7 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
                     return;
                 }
             });
+        }
     }
 
     const route = _getEmptyRoute();

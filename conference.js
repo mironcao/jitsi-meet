@@ -2039,11 +2039,13 @@ export default {
 
             if (user.isHidden()) {
                 //Modificado
-                if(waitingRoom && this.getNParticipants() > 1) {
+                
+                if(waitingRoom && this.getNParticipants() > 0) {
                     if(waitingRoom !== 'undefined') {
                         waitingRoom.close();
                     }
                 }
+                
                 return;
             }
 
@@ -2051,7 +2053,8 @@ export default {
             APP.UI.addUser(user);
             
             //Modificado
-            if(this.getNParticipants() > 1) {
+            
+            if(this.getNParticipants() > 0) {
                 if(waitingRoom !== 'undefined') {
                     waitingRoom.close();
                 }
