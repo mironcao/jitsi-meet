@@ -2039,12 +2039,12 @@ export default {
 
             if (user.isHidden()) {
                 //Modificado
-                
-                if(waitingRoom && this.getNParticipants() > 0) {
+                /*
+                if(waitingRoom && this.getNParticipants() > 1) {
                     if(waitingRoom !== 'undefined') {
                         waitingRoom.close();
                     }
-                }
+                }*/
                 
                 return;
             }
@@ -2054,7 +2054,7 @@ export default {
             
             //Modificado
             
-            if(this.getNParticipants() > 0) {
+            if(this.getNParticipants() > 1) {
                 if(waitingRoom !== 'undefined') {
                     waitingRoom.close();
                 }
@@ -2633,12 +2633,12 @@ export default {
         // 500000));
         
         // Modificado
-        
+        /*
         waitingRoom = APP.UI.messageHandler.openDialog(
             'dialog.WaitingForHost',
             "Por favor, espere al anfitrión",
             true, null
-        );
+        );*/
         //test.close();
     },
 
