@@ -103,8 +103,9 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
                 if (response.status === 200) {
                     console.log("Received status 200");
                 } else {
-                    console.log("Didnt get status 200");
-                    window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
+                    // activar esto
+                    // console.log("Didnt get status 200");
+                    // window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
                     return;
                 }
             });

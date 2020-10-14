@@ -14,6 +14,7 @@ import AbstractChat, {
 
 import ChatInput from './ChatInput';
 import DisplayNameForm from './DisplayNameForm';
+import DragAndDrop from './DragAndDrop';
 import MessageContainer from './MessageContainer';
 import MessageRecipient from './MessageRecipient';
 
@@ -22,6 +23,31 @@ import MessageRecipient from './MessageRecipient';
  * and out of view.
  */
 class Chat extends AbstractChat<Props> {
+
+    state = {
+        files: [
+            'nice.pdf',
+            'verycool.jpg',
+            'amazing.png',
+            'goodstuff.mp3',
+            'thankyou.doc'
+        ]
+    }
+
+    handleDrop = (files) => {
+        try {
+            let fileList = this.state.files
+            for (var i = 0; i < files.length; i++) {
+                console.log(files[i]);
+                if (!files[i].name) return
+                fileList.push(files[i].name)
+            }
+            this.setState({files: fileList})
+        } catch (e) {
+            console.log("Casca: " + e);
+        }
+
+    }
 
     /**
      * Whether or not the {@code Chat} component is off-screen, having finished
@@ -43,7 +69,6 @@ class Chat extends AbstractChat<Props> {
      */
     constructor(props: Props) {
         super(props);
-
         this._isExited = true;
         this._messageContainerRef = React.createRef();
 
@@ -145,6 +170,23 @@ class Chat extends AbstractChat<Props> {
         );
     }
 
+    _renderDragDrop() {
+        try {
+            return (
+                <DragAndDrop handleDrop={this.handleDrop}>
+                  <div style={{height: 300, width: 250}}>
+                    {this.state.files.map((file,i) =>
+                      <div key={i}>{file}</div>
+                    )}
+                  </div>
+                </DragAndDrop>
+              )
+        } catch (e) {
+            console.log("casca2: " + e)
+        }
+
+    }
+
     _renderPanelContent: (string) => React$Node | null;
 
     /**
@@ -164,6 +206,7 @@ class Chat extends AbstractChat<Props> {
             ? null
             : (
                 <>
+                    { this._renderDragDrop() }
                     { this._renderChatHeader() }
                     { _showNamePrompt
                         ? <DisplayNameForm /> : this._renderChat() }

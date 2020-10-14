@@ -2080,9 +2080,10 @@ export default {
                 let participants = APP.conference.listMembers();
                 const roomName = window.location.pathname.slice(1);
                 participants.forEach(participant => {
-                    APP.store.dispatch(kickedOut(room, participant));
-                    window.location.href = 'https://videoconferencia.alisys.net/api/gracias?' + roomName;
-                    this.leaveRoomAndDisconnect();
+                    // activar esto
+                    // APP.store.dispatch(kickedOut(room, participant));
+                    // window.location.href = 'https://videoconferencia.alisys.net/api/gracias?' + roomName;
+                    // this.leaveRoomAndDisconnect();
                 });
             }
             logger.log(`USER ${id} LEFT:`, user);

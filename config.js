@@ -18,7 +18,7 @@ var config = {
         // jirecon: 'jirecon.jitsi-meet.example.com',
 
         // Call control component (Jigasi).
-        call_control: 'callcontrol.51.145.136.126',
+        call_control: 'callcontrol.20.61.210.243',
 
         // Focus component domain. Defaults to focus.<domain>.
         // focus: 'focus.jitsi-meet.example.com',
