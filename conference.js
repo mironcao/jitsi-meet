@@ -137,6 +137,8 @@ const eventEmitter = new EventEmitter();
 let room;
 let connection;
 
+let waitingRoom;
+
 /**
  * The promise is used when the prejoin screen is shown.
  * While the user configures the devices the connection can be made.
@@ -270,7 +272,7 @@ class ConferenceConnector {
     constructor(resolve, reject) {
         this._resolve = resolve;
         this._reject = reject;
-        this.reconnectTimeout = null;
+        this.reconnectTimeout = null
         room.on(JitsiConferenceEvents.CONFERENCE_JOINED,
             this._handleConferenceJoined.bind(this));
         room.on(JitsiConferenceEvents.CONFERENCE_FAILED,
@@ -1890,11 +1892,27 @@ export default {
             commonUserJoinedHandling(APP.store, room, user);
 
             if (user.isHidden()) {
+                // if (waitingRoom !== 'undefined' && room.getParticipants().length > 1) {
+                //     waitingRoom.close();
+                // }
                 return;
             }
 
             logger.log(`USER ${id} connnected:`, user);
             APP.UI.addUser(user);
+
+            if (room.getParticipants().length < 2) {
+                waitingRoom = APP.UI.messageHandler.openDialog('dialog.WaitingForHost',
+                "Por favor, espere al anfitrión", true, null);
+                console.log('Se crea el overlay')
+            }
+
+            if (room.getParticipants().length > 1) {
+                if (waitingRoom !== 'undefined'){
+                    waitingRoom.close();
+                    console.log('Se cierra el overlay')
+                }
+            }
         });
 
         room.on(JitsiConferenceEvents.USER_LEFT, (id, user) => {
@@ -2439,6 +2457,10 @@ export default {
             = APP.store.getState()['features/base/settings'].displayName;
 
         APP.UI.changeDisplayName('localVideoContainer', displayName);
+
+        //console.log('Se crea la overlay de espera al anfitrion');
+            // waitingRoom = APP.UI.messageHandler.openDialog('dialog.WaitingForHost',
+            // "Por favor, espere al anfitrión", true, null);
     },
 
     /**

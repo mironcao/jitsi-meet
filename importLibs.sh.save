@@ -1,0 +1,9 @@
+#!/bin/bash
+cp /usr/local/src/jitsi/jitsi-meet/base.html /usr/share/jitsi-meet/
+cp /usr/local/src/jitsi/jitsi-meet/body.html /usr/share/jitsi-meet/
+cp -r /usr/local/src/jitsi/jitsi-meet/css /usr/share/jitsi-meet/
+cp /usr/local/src/jitsi/jitsi-meet/favicon.ico /usr/share/jitsi-meet/
+cp -r /usr/local/src/jitsi/jitsi-meet/connection_optimization /usr/share/jitsi-meet/
+cp -r /usr/local/src/jitsi/jitsi-meet/fonts /usr/share/jitsi-meet/
+cp /usr/local/src/jitsi/jitsi-meet/head.html /usr/share/jitsi-meet/
+cp https://meet.jit.si/Alisys
