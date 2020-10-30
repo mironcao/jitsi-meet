@@ -507,6 +507,8 @@
 }
 
 #dominantSpeakerAvatarContainer {
+    // Modificado
+    display: none;
     top: 50px;
     margin: auto;
     position: relative;
@@ -602,6 +604,12 @@
 }
 #remoteConnectionMessage {
     display: none;
+}
+
+.display-nothing {
+    .avatar-container {
+        visibility: hidden;
+    }
 }
 
 .display-avatar-with-name {

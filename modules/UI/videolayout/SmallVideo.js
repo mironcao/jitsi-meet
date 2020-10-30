@@ -7,12 +7,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
+import { ThemeProvider } from 'styled-components';
 
 import { AudioLevelIndicator } from '../../../react/features/audio-level-indicator';
 import { Avatar as AvatarDisplay } from '../../../react/features/base/avatar';
 import { i18next } from '../../../react/features/base/i18n';
 import {
     getParticipantCount,
+    getParticipantById,
     getPinnedParticipant,
     pinParticipant
 } from '../../../react/features/base/participants';
@@ -72,6 +74,24 @@ const DISPLAY_VIDEO_WITH_NAME = 3;
  */
 const DISPLAY_AVATAR_WITH_NAME = 4;
 
+const DISPLAY_NOTHING = 5;
+
+function simpleStringify(object){
+    var simpleObject = {};
+    for (var prop in object ){
+        if (!object.hasOwnProperty(prop)){
+            continue;
+        }
+        if (typeof(object[prop]) == 'object'){
+            continue;
+        }
+        if (typeof(object[prop]) == 'function'){
+            continue;
+        }
+        simpleObject[prop] = object[prop];
+    }
+    return JSON.stringify(simpleObject); // returns cleaned up JSON
+};
 
 /**
  *
@@ -469,14 +489,18 @@ export default class SmallVideo {
      * or <tt>DISPLAY_BLACKNESS_WITH_NAME</tt>.
      */
     selectDisplayMode(input) {
-        if (!input.tileViewActive && input.isScreenSharing) {
-            return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;
-        } else if (input.isCurrentlyOnLargeVideo && !input.tileViewActive) {
-            // Display name is always and only displayed when user is on the stage
-            return input.isVideoPlayable && !input.isAudioOnly ? DISPLAY_BLACKNESS_WITH_NAME : DISPLAY_AVATAR_WITH_NAME;
-        } else if (input.isVideoPlayable && input.hasVideo && !input.isAudioOnly) {
-            // check hovering and change state to video with name
-            return input.isHovered ? DISPLAY_VIDEO_WITH_NAME : DISPLAY_VIDEO;
+        try {
+            if (!input.tileViewActive && input.isScreenSharing) {
+                return input.isHovered ? DISPLAY_AVATAR_WITH_NAME : DISPLAY_AVATAR;
+            } else if (input.isCurrentlyOnLargeVideo && !input.tileViewActive) {
+                // Display name is always and only displayed when user is on the stage
+                return input.isVideoPlayable && !input.isAudioOnly ? DISPLAY_BLACKNESS_WITH_NAME : DISPLAY_AVATAR_WITH_NAME;
+            } else if (input.isVideoPlayable && input.hasVideo && !input.isAudioOnly) {
+                // check hovering and change state to video with name
+                return input.isHovered ? DISPLAY_VIDEO_WITH_NAME : DISPLAY_VIDEO;
+            }
+        } catch {
+            return DISPLAY_NOTHING;
         }
 
         // check hovering and change state to avatar with name
@@ -528,13 +552,27 @@ export default class SmallVideo {
 
         const displayModeInput = this.computeDisplayModeInput();
 
-        // Determine whether video, avatar or blackness should be displayed
-        this.displayMode = this.selectDisplayMode(displayModeInput);
+        //console.log(this.user.id);
+        // Modificado
+        try {
+            if((APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
+                this.displayMode = DISPLAY_NOTHING;
+            } else {
+                this.displayMode = this.selectDisplayMode(displayModeInput);
+            }
+        } catch {
+            this.displayMode = this.selectDisplayMode(displayModeInput);
+        }
 
         switch (this.displayMode) {
         case DISPLAY_AVATAR_WITH_NAME:
             displayModeString = 'avatar-with-name';
             this.$container.addClass('display-avatar-with-name');
+            break;
+        // Modificado
+        case DISPLAY_NOTHING:
+            displayModeString = 'nothing';
+            this.$container.hide();
             break;
         case DISPLAY_BLACKNESS_WITH_NAME:
             displayModeString = 'blackness-with-name';

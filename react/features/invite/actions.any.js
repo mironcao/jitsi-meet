@@ -77,7 +77,9 @@ export function invite(
                 && invitees.length === 1
                 && invitees[0].type === 'user'
                 && participants.length === 1) {
-            dispatch(setCalleeInfoVisible(true, invitees[0]));
+            // Modificado
+            dispatch(setCalleeInfoVisible(false, invitees[0]));
+            // dispatch(setCalleeInfoVisible(true, invitees[0]));
         }
 
         const { conference } = state['features/base/conference'];
@@ -228,7 +230,9 @@ export function updateDialInNumbers() {
  * }}
  */
 export function setCalleeInfoVisible(
-        calleeInfoVisible: boolean,
+        // Modificado
+        calleeInfoVisible: false,
+        // calleeInfoVisible: boolean,
         initialCalleeInfo: ?Object) {
     return {
         type: SET_CALLEE_INFO_VISIBLE,

@@ -152,7 +152,9 @@ function _mapStateToProps(state) {
     }
 
     return {
-        _callee: state['features/invite'].initialCalleeInfo,
+        // Modificado
+        //_callee: state['features/invite'].initialCalleeInfo,
+        _callee: null,
         _isVideoMuted
     };
 }
