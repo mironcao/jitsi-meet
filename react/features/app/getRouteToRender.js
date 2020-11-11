@@ -3,7 +3,7 @@
 import { generateRoomWithoutSeparator } from '@jitsi/js-utils/random';
 import type { Component } from 'react';
 
-import { isRoomValid } from '../base/conference';
+import { isRoomValid, isRoomPrueba } from '../base/conference';
 import { isSupportedBrowser } from '../base/environment';
 import { toState } from '../base/redux';
 import { Conference } from '../conference';
@@ -67,6 +67,7 @@ function _getMobileRoute(state): Promise<Route> {
     return Promise.resolve(route);
 }
 
+
 /**
  * Returns the {@code Route} to display when trying to access a conference if
  * a valid conference is being joined.
@@ -75,8 +76,122 @@ function _getMobileRoute(state): Promise<Route> {
  * @returns {Promise<Route>|undefined}
  */
 function _getWebConferenceRoute(state): ?Promise<Route> {
+
+    const stateURL = {'page_id' : 1, 'user_id': 5};
+    const title = '';
+
     if (!isRoomValid(state['features/base/conference'].room)) {
         return;
+    }
+
+    if (isRoomPrueba(state['features/base/conference'].room)) {
+        console.log('sala prueba');
+        const route = _getEmptyRoute();
+
+        // Update the location if it doesn't match. This happens when a room is
+        // joined from the welcome page. The reason for doing this instead of using
+        // the history API is that we want to load the config.js which takes the
+        // room into account.
+        const { locationURL } = state['features/base/connection'];
+    
+        if (window.location.href !== locationURL.href) {
+            route.href = locationURL.href;
+    
+            return Promise.resolve(route);
+        }
+    
+        return getDeepLinkingPage(state)
+            .then(deepLinkComponent => {
+                if (deepLinkComponent) {
+                    route.component = deepLinkComponent;
+                } else if (isSupportedBrowser()) {
+                    route.component = Conference;
+                } else {
+                    route.component = UnsupportedDesktopBrowser;
+                }
+    
+                return route;
+            });
+    } else {
+        const stateURL = {'page_id' : 1, 'user_id': 5};
+        const title = '';
+        const url = window.location.href;
+            const roomName = window.location.pathname.slice(1);
+            //console.log(roomName);
+            var headers = new Headers();
+
+            var reqH2 = {
+                method: 'GET',
+                headers: headers,
+                mode: 'cors',
+                cache: 'default'
+            };
+
+            history.pushState(stateURL, title, url);
+
+            fetch('https://videoconferencia.alisys.net/api/webservice?token=' + roomName, reqH2)
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log("Received status 200");
+                    } else {
+                        // activar esto
+                        console.log("Didnt get status 200");
+                        window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
+                        return;
+                    }
+                });
+
+    }
+
+
+}
+
+
+// Modificado
+/**
+ * Returns the {@code Route} to display when trying to access a conference if
+ * a valid conference is being joined.
+ *
+ * @param {Object} state - The redux state.
+ * @returns {Promise<Route>|undefined}
+ */
+/*
+function _getWebConferenceRoute(state): ?Promise<Route> {
+
+    // Modificado
+    const stateURL = {'page_id' : 1, 'user_id': 5};
+    const title = '';
+    
+    if (!isRoomValid(state['features/base/conference'].room) || true) {
+        if(isRoomPrueba(window.location.href)) {
+            console.log('sala prueba');
+        } else {
+            const url = window.location.href;
+            const roomName = window.location.pathname.slice(1);
+            //console.log(roomName);
+            var headers = new Headers();
+
+            var reqH2 = {
+                method: 'GET',
+                headers: headers,
+                mode: 'cors',
+                cache: 'default'
+            };
+
+            history.pushState(stateURL, title, url);
+
+            fetch('https://videoconferencia.alisys.net/api/webservice?token=' + roomName, reqH2)
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log("Received status 200");
+                    } else {
+                        // activar esto
+                        // console.log("Didnt get status 200");
+                        // window.location.href = 'https://videoconferencia.alisys.net/api/error?token=' + roomName;
+                        return;
+                    }
+                });
+        }
     }
 
     const route = _getEmptyRoute();
@@ -106,7 +221,7 @@ function _getWebConferenceRoute(state): ?Promise<Route> {
             return route;
         });
 }
-
+*/
 /**
  * Returns the {@code Route} to display when trying to access the welcome page.
  *

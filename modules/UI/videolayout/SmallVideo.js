@@ -157,7 +157,7 @@ export default class SmallVideo {
         this._onPopoverHover = this._onPopoverHover.bind(this);
         this.updateView = this.updateView.bind(this);
 
-        this._onContainerClick = this._onContainerClick.bind(this);
+        //this._onContainerClick = this._onContainerClick.bind(this);
     }
 
     /**
@@ -325,8 +325,12 @@ export default class SmallVideo {
 
         audioLevelContainer = document.createElement('span');
         audioLevelContainer.className = 'audioindicator-container';
-        this.container.appendChild(audioLevelContainer);
-        this.updateAudioLevelIndicator();
+        if(this.displayMode
+             === DISPLAY_NOTHING) {
+            this.container.appendChild(audioLevelContainer);
+            this.updateAudioLevelIndicator();
+        }
+
     }
 
     /**

@@ -123,8 +123,11 @@ const VideoLayout = {
         }
 
         if (largeVideo && id === largeVideo.id) {
-            largeVideo.updateLargeVideoAudioLevel(lvl);
+            // Modificado
+            return;
+            //largeVideo.updateLargeVideoAudioLevel(lvl);
         }
+
     },
 
     changeLocalVideo(stream) {
@@ -811,7 +814,16 @@ const VideoLayout = {
      */
     _updateLargeVideoIfDisplayed(participantId, force = false) {
         if (this.isCurrentlyOnLarge(participantId)) {
-            this.updateLargeVideo(participantId, force);
+            try {
+                if((APP.conference.getParticipantById(this.id)._supportsDTMF || !isNaN(APP.conference.getParticipantById(this.id)._displayName))) {
+                    this.updateLargeVideo(participantId, force);
+                } else {
+                    return;
+                }
+            } catch {
+                return;
+            }
+
         }
     },
 

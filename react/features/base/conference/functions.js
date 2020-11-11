@@ -255,6 +255,16 @@ export function isRoomValid(room: ?string) {
     return typeof room === 'string' && room !== '';
 }
 
+
+// Modificado
+export function isRoomPrueba(room: ?string) {
+    if (room.toLowerCase().includes('alisysprueba')) {
+        return typeof room === 'string';
+    } else {
+        return false;
+    }
+}
+
 /**
  * Remove a set of local tracks from a conference.
  *

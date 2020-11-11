@@ -117,7 +117,7 @@ export default class RemoteVideo extends SmallVideo {
         this._setAudioVolume = this._setAudioVolume.bind(this);
         this._stopRemoteControl = this._stopRemoteControl.bind(this);
 
-        this.container.onclick = this._onContainerClick;
+        //this.container.onclick = this._onContainerClick;
     }
 
     /**

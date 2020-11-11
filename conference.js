@@ -1923,6 +1923,18 @@ export default {
                 return;
             }
 
+            if(!user.isModerator()) {
+                let participants = APP.conference.listMembers();
+                const roomName = window.location.pathname.slice(1);
+                participants.forEach(participant => {
+                    // Modificado
+                    // activar esto para salir de sala
+                    // APP.store.dispatch(kickedOut(room, participant));
+                    // window.location.href = 'https://videoconferencia.alisys.net/api/gracias?' + roomName;
+                    // this.leaveRoomAndDisconnect();
+                });
+            }
+
             logger.log(`USER ${id} LEFT:`, user);
 
             APP.UI.onSharedVideoStop(id);
